@@ -15,8 +15,8 @@ namespace TemplateToPDF.Services.Implementation
         {
             _smtpServer = "smtp.gmail.com";
             _smtpPort = 587;
-            _smtpUsername = "hello.learnnearn@gmail.com";
-            _smtpPassword = "peco udeu xfph hhec";
+            _smtpUsername = "Place Your Own Mail Id";
+            _smtpPassword = "replace with your Password";
         }
 
         public async Task SendEmailWithAttachmentAsync(string recipientEmail, string subject, string message, byte[] attachmentData, string attachmentName)
