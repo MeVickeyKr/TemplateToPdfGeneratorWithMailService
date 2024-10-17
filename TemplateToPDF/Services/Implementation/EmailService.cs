@@ -20,8 +20,8 @@ namespace TemplateToPDF.Services.Implementation
         {
             _smtpServer = "smtp.gmail.com";
             _smtpPort = 587;
-            _smtpUsername = "hello.learnnearn@gmail.com";
-            _smtpPassword = "peco udeu xfph hhec";
+            _smtpUsername = "Place your UserID(E-mail)";
+            _smtpPassword = "Password as per the ID";
             _messagingRepository = messagingRepository;
             _policyPdfRecordsRepository = policyPdfRecordsRepository;
         }
