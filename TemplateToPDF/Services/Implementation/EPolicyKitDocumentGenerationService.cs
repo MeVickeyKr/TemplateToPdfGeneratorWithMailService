@@ -1,11 +1,9 @@
 ﻿using PuppeteerSharp.Media;
 using PuppeteerSharp;
 using TemplateToPDF.DAL.Entities;
-using TemplateToPDF.DAL.Repository.Implementations;
 using TemplateToPDF.DAL.Repository.Interface;
 using TemplateToPDF.Services.Interface;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Mail;
+
 
 namespace TemplateToPDF.Services.Implementation
 {
@@ -13,15 +11,11 @@ namespace TemplateToPDF.Services.Implementation
     {
         private readonly IPolicyPdfRecordsRepository _policyPdfRecordsRepository;
         private readonly IHtmlTempelatesRepository _htmlTempelatesRepository;
-        private readonly IEmailService _emailService;
 
-        public EPolicyKitDocumentGenerationService(IPolicyPdfRecordsRepository policyPdfRecordsRepository, IHtmlTempelatesRepository htmlTempelatesRepository,   IEmailService emailService  )
+        public EPolicyKitDocumentGenerationService(IPolicyPdfRecordsRepository policyPdfRecordsRepository, IHtmlTempelatesRepository htmlTempelatesRepository)
         {
             _policyPdfRecordsRepository = policyPdfRecordsRepository;
             _htmlTempelatesRepository = htmlTempelatesRepository;
-            _emailService = emailService;
-           
-
         }
         public async Task GenerateAndSavePdfAsync(UserPolicyDetailEntity userpolicyDetailsEntity)
         {
@@ -40,15 +34,6 @@ namespace TemplateToPDF.Services.Implementation
 
             byte[] pdfBytes = await GeneratePdfAsync(populatedHtml);
             await SavePdfToDatabase(userpolicyDetailsEntity, pdfBytes);
-
-
-
-            string recipientEmail = userpolicyDetailsEntity.EmailAddress; // Replace with actual email
-            string subject = "Regarding Your Credit Card";
-            string message = $"Dear {userpolicyDetailsEntity.Name}, please find your updated  document attached.";
-            string attachmentName = $"{userpolicyDetailsEntity.PolicyNumber}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-
-            await _emailService.SendEmailWithAttachmentAsync(recipientEmail, subject, message, pdfBytes, attachmentName);
         }
         private async Task<byte[]> GeneratePdfAsync(string htmlContent)
         {
@@ -70,9 +55,8 @@ namespace TemplateToPDF.Services.Implementation
        
         private async Task SavePdfToDatabase(UserPolicyDetailEntity userPolicyDetailsEntity, byte[] pdfBytes)
         {
-            var existingDocument = await _policyPdfRecordsRepository.GetDocumentByPolicyNumberAndProductCodeAsync(
-              userPolicyDetailsEntity.PolicyNumber,
-              userPolicyDetailsEntity.ProductCode
+            var existingDocument = await _policyPdfRecordsRepository.GetDocumentByObjectCode(
+               $"{userPolicyDetailsEntity.PolicyNumber}-{userPolicyDetailsEntity.ProductCode}"
              );
 
             if (existingDocument != null)
@@ -81,9 +65,9 @@ namespace TemplateToPDF.Services.Implementation
                 await _policyPdfRecordsRepository.SaveChangesAsync();
             }
 
-            var newDocument = new PolicyPdfRecord
+            var newDocument = new PolicyPdfRecordEntity
             {
-                ObjectCode = $"{userPolicyDetailsEntity.PolicyNumber} - {userPolicyDetailsEntity.ProductCode}",
+                ObjectCode = $"{userPolicyDetailsEntity.PolicyNumber}-{userPolicyDetailsEntity.ProductCode}",
                 ReferenceType = "Policy",
                 ReferenceNumber = userPolicyDetailsEntity.PolicyNumber,
                 Content = pdfBytes,

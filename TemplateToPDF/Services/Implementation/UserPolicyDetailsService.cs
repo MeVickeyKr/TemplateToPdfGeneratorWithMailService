@@ -10,36 +10,55 @@ namespace TemplateToPDF.Services.Implementation
     {
         private readonly IUserPolicyDetailsRepository _userPolicyDetailsRepository;
         private readonly IEPolicyKitDocumentGenerationService _ePolicyKitDocumentGenerationService;
-        public UserPolicyDetailsService(IUserPolicyDetailsRepository userPolicyDetailsRepository , IEPolicyKitDocumentGenerationService ePolicyKitDocumentGenerationService )
+        private readonly IMessagingRepository _messagingRepository;
+        public UserPolicyDetailsService(IUserPolicyDetailsRepository userPolicyDetailsRepository, IEPolicyKitDocumentGenerationService ePolicyKitDocumentGenerationService , IMessagingRepository messagingRepository)
         {
             _userPolicyDetailsRepository = userPolicyDetailsRepository;
             _ePolicyKitDocumentGenerationService = ePolicyKitDocumentGenerationService;
+            _messagingRepository = messagingRepository;
         }
 
-        public async Task<UserPolicyDetailEntity> CreateItemAsync(UserPolicyDetailRequestModel userPolicyDetailRequestModel)
+        public async Task<UserPolicyDetailEntity> CreateItemAsync(UserPolicyDetailRequestModel model)
         {
             UserPolicyDetailEntity userPolicyDetailEntity = new UserPolicyDetailEntity()
             {
-                Name = userPolicyDetailRequestModel.Name,
+                Name = model.Name,
 
-                PolicyNumber = userPolicyDetailRequestModel.PolicyNumber,
+                PolicyNumber = model.PolicyNumber,
 
-                Age = userPolicyDetailRequestModel.Age,
+                Age = model.Age,
 
-                Salary = userPolicyDetailRequestModel.Salary,
+                Salary = model.Salary,
 
-                Occupation = userPolicyDetailRequestModel.Occupation,
+                Occupation = model.Occupation,
 
-                PolicyExpiryDate = userPolicyDetailRequestModel.PolicyExpiryDate,
+                PolicyExpiryDate = model.PolicyExpiryDate,
 
+                ProductCode = model.ProductCode,
 
-                ProductCode = userPolicyDetailRequestModel.ProductCode,
-
-                EmailAddress = userPolicyDetailRequestModel.EmailAddress,
+                EmailAddress = model.EmailAddress,
 
             };
-            await _userPolicyDetailsRepository.PostPolicyDetailsToDb(userPolicyDetailEntity);
-            await  _ePolicyKitDocumentGenerationService.GenerateAndSavePdfAsync(userPolicyDetailEntity);
+            var user = await _userPolicyDetailsRepository.PostPolicyDetailsToDb(userPolicyDetailEntity);
+
+            // mapping messaging 
+            MessagingEntity messagingEntity = new MessagingEntity()
+            {
+                PolicyNumber = $"{user.PolicyNumber}-{user.ProductCode}",
+                Destination = user.EmailAddress, 
+                DestinationCC = null,
+                DestinationBCC = null,
+                Body = Extensions.Body.Replace("User" , user.Name),
+                Attempt=0,
+                MaxAttempt=Extensions.MaxAttempt,
+                isDeleted=false,
+                isSent=false,
+                CreatedDateTime = DateTime.UtcNow,
+                UpdatedDateTime = DateTime.UtcNow,
+                LastAttempt = DateTime.UtcNow,
+            };
+            await _messagingRepository.AddAsync(messagingEntity);
+            await _ePolicyKitDocumentGenerationService.GenerateAndSavePdfAsync(userPolicyDetailEntity);
             return userPolicyDetailEntity;
         }
     }

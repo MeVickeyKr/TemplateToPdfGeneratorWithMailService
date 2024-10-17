@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TemplateToPDF.DAL.Entities;
 
-public partial class PolicyPdfRecord
+public partial class PolicyPdfRecordEntity
 {
     public string? ObjectCode { get; set; }
     

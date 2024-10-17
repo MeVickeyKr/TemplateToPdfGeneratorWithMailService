@@ -14,15 +14,15 @@ namespace TemplateToPDF.DAL.Repository.Implementations
            _dbContext = policyDocumentDbContext;
         }
 
-        public async Task<PolicyPdfRecord> GetDocumentByPolicyNumberAndProductCodeAsync(string policyNumber, string productCode)
+        public async Task<PolicyPdfRecordEntity> GetDocumentByObjectCode(string objectCode)
         {
             return await _dbContext.PolicyPdfRecord
-                .FirstOrDefaultAsync(d => d.ReferenceNumber == policyNumber && d.ObjectCode == $"{policyNumber} - {productCode}");
+                .FirstOrDefaultAsync(d => d.ObjectCode == objectCode) ?? new();
         }
 
-        public async Task SoftDeleteExistingDocumentAsync(string policyNumber, string productCode)
+        public async Task SoftDeleteExistingDocumentAsync(string objectCode)
         {
-            var existingDocument = await GetDocumentByPolicyNumberAndProductCodeAsync(policyNumber, productCode);
+            var existingDocument = await GetDocumentByObjectCode(objectCode);
 
             if (existingDocument != null)
             {
@@ -34,10 +34,10 @@ namespace TemplateToPDF.DAL.Repository.Implementations
         {
             await _dbContext.SaveChangesAsync();
         }
-        public async Task AddDocumentAsync(PolicyPdfRecord document)
+        public async Task AddDocumentAsync(PolicyPdfRecordEntity document)
         {
 
-            string path = @"C:\Users\vk774\OneDrive\Desktop\Pdfdocument";
+            string path = @"C:\Users\RemoteState\Desktop\pdf document";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

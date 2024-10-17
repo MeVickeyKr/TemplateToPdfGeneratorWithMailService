@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TemplateToPDF.Services.ApiResquestModel;
+using TemplateToPDF.Services.Implementation;
 using TemplateToPDF.Services.Interface;
 
 namespace TemplateToPDF.Controllers
@@ -21,6 +23,13 @@ namespace TemplateToPDF.Controllers
             await _userPolicyDetailsService.CreateItemAsync(requestModel);
 
             return Ok(requestModel);
+        }
+        [HttpPost ("HangFire")]
+        public async Task<IActionResult> GenerateRecurringJob()
+        {
+            RecurringJob.AddOrUpdate<EmailService>("EmailService" , x=>x.GenerateEmail(), "* * * * * *");
+            
+            return  Ok();
         }
     }
 }

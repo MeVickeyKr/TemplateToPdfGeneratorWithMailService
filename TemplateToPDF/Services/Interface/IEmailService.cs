@@ -1,7 +1,9 @@
-﻿namespace TemplateToPDF.Services.Interface
+﻿using TemplateToPDF.DAL.Entities;
+
+namespace TemplateToPDF.Services.Interface
 {
     public interface IEmailService
     {
-        Task SendEmailWithAttachmentAsync(string recipientEmail, string subject, string message, byte[] attachmentData, string attachmentName);
+        Task SendEmailWithAttachmentAsync(MessagingEntity entity, PolicyPdfRecordEntity policyPdf);
     }
 }

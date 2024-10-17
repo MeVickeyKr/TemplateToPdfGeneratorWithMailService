@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using TemplateToPDF.DAL.DatabaseContext;
 using TemplateToPDF.DAL.Repository.Implementations;
@@ -18,13 +19,20 @@ builder.Services.AddTransient<IHtmlTempelatesRepository, HtmlTempelatesRepositor
 builder.Services.AddTransient<IPolicyPdfRecordsRepository, PolicyPdfRecordsRepository>();
 builder.Services.AddTransient<IEPolicyKitDocumentGenerationService , EPolicyKitDocumentGenerationService>();
 builder.Services.AddTransient<IEmailService , EmailService>();
+builder.Services.AddTransient<IMessagingRepository , MessagingRepository>();
 
 builder.Services.AddDbContext<PolicyDocumentDbContext>(options =>
  options.UseSqlServer(builder.Configuration.GetConnectionString("Defaultconnection")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddHangfire((sp, config) =>
+{
+    var connectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("Defaultconnection");
+    config.UseSqlServerStorage(connectionString);
+}
+    );
+builder.Services.AddHangfireServer();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

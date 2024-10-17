@@ -6,9 +6,9 @@ namespace TemplateToPDF.DAL.Repository.Interface
     {
 
 
-        Task<PolicyPdfRecord> GetDocumentByPolicyNumberAndProductCodeAsync(string policyNumber, string productCode);
-        Task SoftDeleteExistingDocumentAsync(string policyNumber, string productCode);
-            Task AddDocumentAsync(PolicyPdfRecord document);
+        Task<PolicyPdfRecordEntity> GetDocumentByObjectCode(string objectCode);
+        Task SoftDeleteExistingDocumentAsync(string objectCode);
+            Task AddDocumentAsync(PolicyPdfRecordEntity document);
             Task SaveChangesAsync();
         
 

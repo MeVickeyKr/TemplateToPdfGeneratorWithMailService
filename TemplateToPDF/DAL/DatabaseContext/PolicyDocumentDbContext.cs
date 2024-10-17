@@ -17,10 +17,11 @@ namespace TemplateToPDF.DAL.DatabaseContext
 
         public virtual DbSet<HtmlTemplateEntity> HtmlTemplates { get; set; }
 
-        public virtual DbSet<PolicyPdfRecord> PolicyPdfRecord { get; set; }
+        public virtual DbSet<PolicyPdfRecordEntity> PolicyPdfRecord { get; set; }
 
         public virtual DbSet<UserPolicyDetailEntity> UserPolicyDetails { get; set; }
 
+        public virtual DbSet<MessagingEntity> MessagingTable { get; set; }
 
     }
 
