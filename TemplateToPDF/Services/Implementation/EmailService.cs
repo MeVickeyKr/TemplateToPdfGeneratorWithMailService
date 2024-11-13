@@ -20,8 +20,8 @@ namespace TemplateToPDF.Services.Implementation
         {
             _smtpServer = "smtp.gmail.com";
             _smtpPort = 587;
-            _smtpUsername = "Place your UserID(E-mail)";
-            _smtpPassword = "Password as per the ID";
+            _smtpUsername = "hello.learnnearn@gmail.com";
+            _smtpPassword = "peco udeu xfph hhec";
             _messagingRepository = messagingRepository;
             _policyPdfRecordsRepository = policyPdfRecordsRepository;
         }
@@ -73,7 +73,7 @@ namespace TemplateToPDF.Services.Implementation
                 mailMessage.To.Add(entity.Destination);
 
                 // Create a memory stream for the attachment data
-                using (var memoryStream = new MemoryStream(policyPdf.Content))
+                using (var memoryStream = new MemoryStream(policyPdf.Content ))
                 {
                     var attachment = new Attachment(memoryStream, policyPdf.FileName, "application/pdf");
                     mailMessage.Attachments.Add(attachment);

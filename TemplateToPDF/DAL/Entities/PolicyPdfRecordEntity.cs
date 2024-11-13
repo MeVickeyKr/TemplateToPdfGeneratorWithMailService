@@ -12,7 +12,7 @@ public partial class PolicyPdfRecordEntity
     [Key]
     public string ReferenceNumber { get; set; } = null!;
 
-    public byte[]? Content { get; set; }
+    public byte[] Content { get; set; } = new byte[0];
 
     public string? FileName { get; set; }
 

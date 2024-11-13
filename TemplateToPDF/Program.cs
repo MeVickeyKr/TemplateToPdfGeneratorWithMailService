@@ -1,4 +1,5 @@
 using Hangfire;
+using Serilog;
 using Microsoft.EntityFrameworkCore;
 using TemplateToPDF.DAL.DatabaseContext;
 using TemplateToPDF.DAL.Repository.Implementations;
@@ -20,6 +21,17 @@ builder.Services.AddTransient<IPolicyPdfRecordsRepository, PolicyPdfRecordsRepos
 builder.Services.AddTransient<IEPolicyKitDocumentGenerationService , EPolicyKitDocumentGenerationService>();
 builder.Services.AddTransient<IEmailService , EmailService>();
 builder.Services.AddTransient<IMessagingRepository , MessagingRepository>();
+
+
+// implementing the seri-log.sinks  
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+
+
 
 builder.Services.AddDbContext<PolicyDocumentDbContext>(options =>
  options.UseSqlServer(builder.Configuration.GetConnectionString("Defaultconnection")));

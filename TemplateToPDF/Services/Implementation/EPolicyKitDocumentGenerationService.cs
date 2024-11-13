@@ -47,12 +47,12 @@ namespace TemplateToPDF.Services.Implementation
                     {
                         Format = PaperFormat.A4,
                         PrintBackground = true,
-                        MarginOptions = new MarginOptions { Top= "10px" , Bottom="10px"}
+                        MarginOptions = new MarginOptions { Top = "10px", Bottom = "10px" }
                     });
                 }
             }
         }
-       
+
         private async Task SavePdfToDatabase(UserPolicyDetailEntity userPolicyDetailsEntity, byte[] pdfBytes)
         {
             var existingDocument = await _policyPdfRecordsRepository.GetDocumentByObjectCode(

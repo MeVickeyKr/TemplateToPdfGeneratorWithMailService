@@ -1,5 +1,4 @@
 ﻿using TemplateToPDF.DAL.Entities;
-using TemplateToPDF.DAL.Repository.Implementations;
 using TemplateToPDF.DAL.Repository.Interface;
 using TemplateToPDF.Services.ApiResquestModel;
 using TemplateToPDF.Services.Interface;
@@ -41,7 +40,7 @@ namespace TemplateToPDF.Services.Implementation
             };
             var user = await _userPolicyDetailsRepository.PostPolicyDetailsToDb(userPolicyDetailEntity);
 
-            // mapping messaging 
+            // mapping messaging Table
             MessagingEntity messagingEntity = new MessagingEntity()
             {
                 PolicyNumber = $"{user.PolicyNumber}-{user.ProductCode}",

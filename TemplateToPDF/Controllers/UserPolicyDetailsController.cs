@@ -12,20 +12,24 @@ namespace TemplateToPDF.Controllers
     public class UserPolicyDetailsController : ControllerBase
     {
         private readonly IUserPolicyDetailsService _userPolicyDetailsService;
-        public UserPolicyDetailsController(IUserPolicyDetailsService userPolicyDetailsService)
+        private readonly ILogger<UserPolicyDetailsController> _logger;
+        public UserPolicyDetailsController(IUserPolicyDetailsService userPolicyDetailsService, ILogger<UserPolicyDetailsController> logger)
         {
             _userPolicyDetailsService = userPolicyDetailsService;
+            _logger = logger;
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserPolicyDetailRequestModel>> PostAsync([FromBody] UserPolicyDetailRequestModel requestModel)
+        public async Task<ActionResult> PostAsync([FromBody] UserPolicyDetailRequestModel requestModel)
         {
             await _userPolicyDetailsService.CreateItemAsync(requestModel);
 
-            return Ok(requestModel);
+            return Ok("registered Successfully");
         }
+
+        // endpoint for HangFire
         [HttpPost ("HangFire")]
-        public async Task<IActionResult> GenerateRecurringJob()
+        public  IActionResult GenerateRecurringJob()
         {
             RecurringJob.AddOrUpdate<EmailService>("EmailService" , x=>x.GenerateEmail(), "* * * * * *");
             
